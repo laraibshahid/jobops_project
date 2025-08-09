@@ -1,0 +1,1782 @@
+openapi: 3.0.3
+info:
+  title: JobOps API
+  version: 1.0.0
+  description: Internal Operations Management System API
+paths:
+  /api/admin-analytics/:
+    get:
+      operationId: admin_analytics_retrieve
+      description: Admin analytics endpoint
+      tags:
+      - admin-analytics
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/auth/change-password/:
+    post:
+      operationId: auth_change_password_create
+      description: Change user password
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/auth/login/:
+    post:
+      operationId: auth_login_create
+      description: User login endpoint
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/auth/profile/:
+    get:
+      operationId: auth_profile_retrieve
+      description: Get current user information
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/auth/profile/update/:
+    get:
+      operationId: auth_profile_update_retrieve
+      description: Retrieve and update current user profile
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: auth_profile_update_update
+      description: Retrieve and update current user profile
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: auth_profile_update_partial_update
+      description: Retrieve and update current user profile
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/token/refresh/:
+    post:
+      operationId: auth_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/auth/users/:
+    get:
+      operationId: auth_users_list
+      description: List all users or create a new user (Admin only)
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserListList'
+          description: ''
+    post:
+      operationId: auth_users_create
+      description: List all users or create a new user (Admin only)
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/auth/users/{id}/:
+    get:
+      operationId: auth_users_retrieve
+      description: Retrieve, update or delete a user (Admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: auth_users_update
+      description: Retrieve, update or delete a user (Admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: auth_users_partial_update
+      description: Retrieve, update or delete a user (Admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    delete:
+      operationId: auth_users_destroy
+      description: Retrieve, update or delete a user (Admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/equipment/:
+    get:
+      operationId: equipment_list
+      description: List all equipment or create new equipment (Admin only)
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - machine
+          - other
+          - tool
+          - vehicle
+        description: |-
+          * `tool` - Tool
+          * `machine` - Machine
+          * `vehicle` - Vehicle
+          * `other` - Other
+      tags:
+      - equipment
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEquipmentListList'
+          description: ''
+    post:
+      operationId: equipment_create
+      description: List all equipment or create new equipment (Admin only)
+      tags:
+      - equipment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EquipmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EquipmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EquipmentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Equipment'
+          description: ''
+  /api/equipment/{id}/:
+    get:
+      operationId: equipment_retrieve
+      description: Retrieve, update or delete equipment (Admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - equipment
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Equipment'
+          description: ''
+    put:
+      operationId: equipment_update
+      description: Retrieve, update or delete equipment (Admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - equipment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EquipmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EquipmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EquipmentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Equipment'
+          description: ''
+    patch:
+      operationId: equipment_partial_update
+      description: Retrieve, update or delete equipment (Admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - equipment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEquipmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEquipmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEquipmentRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Equipment'
+          description: ''
+    delete:
+      operationId: equipment_destroy
+      description: Retrieve, update or delete equipment (Admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - equipment
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/equipment/list/:
+    get:
+      operationId: equipment_list_list
+      description: List all active equipment (Read-only for all authenticated users)
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - machine
+          - other
+          - tool
+          - vehicle
+        description: |-
+          * `tool` - Tool
+          * `machine` - Machine
+          * `vehicle` - Vehicle
+          * `other` - Other
+      tags:
+      - equipment
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEquipmentListList'
+          description: ''
+  /api/jobs/:
+    get:
+      operationId: jobs_list
+      description: List all jobs or create a new job (Admin/Sales Agent only)
+      parameters:
+      - in: query
+        name: assigned_to
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - in: query
+        name: overdue
+        schema:
+          type: boolean
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: priority
+        schema:
+          type: integer
+          enum:
+          - 1
+          - 2
+          - 3
+          - 4
+        description: |-
+          * `1` - Low
+          * `2` - Medium
+          * `3` - High
+          * `4` - Critical
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - cancelled
+          - completed
+          - in_progress
+          - pending
+        description: |-
+          * `pending` - Pending
+          * `in_progress` - In Progress
+          * `completed` - Completed
+          * `cancelled` - Cancelled
+      tags:
+      - jobs
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedJobListList'
+          description: ''
+    post:
+      operationId: jobs_create
+      description: List all jobs or create a new job (Admin/Sales Agent only)
+      tags:
+      - jobs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/JobCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JobCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobCreate'
+          description: ''
+  /api/jobs/{job_id}/tasks/:
+    get:
+      operationId: jobs_tasks_list
+      description: List all tasks for a job or create a new task
+      parameters:
+      - in: path
+        name: job_id
+        schema:
+          type: integer
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - jobs
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedJobTaskList'
+          description: ''
+    post:
+      operationId: jobs_tasks_create
+      description: List all tasks for a job or create a new task
+      parameters:
+      - in: path
+        name: job_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - jobs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobTaskCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/JobTaskCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JobTaskCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobTaskCreate'
+          description: ''
+  /api/jobs/{id}/:
+    get:
+      operationId: jobs_retrieve
+      description: Retrieve, update or delete a job
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - jobs
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+          description: ''
+    put:
+      operationId: jobs_update
+      description: Retrieve, update or delete a job
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - jobs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/JobRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JobRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+          description: ''
+    patch:
+      operationId: jobs_partial_update
+      description: Retrieve, update or delete a job
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - jobs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedJobRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedJobRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedJobRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+          description: ''
+    delete:
+      operationId: jobs_destroy
+      description: Retrieve, update or delete a job
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - jobs
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/tasks/{id}/:
+    get:
+      operationId: tasks_retrieve
+      description: Retrieve, update or delete a job task
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tasks
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobTask'
+          description: ''
+    put:
+      operationId: tasks_update
+      description: Retrieve, update or delete a job task
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tasks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobTaskRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/JobTaskRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JobTaskRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobTask'
+          description: ''
+    patch:
+      operationId: tasks_partial_update
+      description: Retrieve, update or delete a job task
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tasks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedJobTaskRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedJobTaskRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedJobTaskRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobTask'
+          description: ''
+    delete:
+      operationId: tasks_destroy
+      description: Retrieve, update or delete a job task
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tasks
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/tasks/{task_id}/update-status/:
+    post:
+      operationId: tasks_update_status_create
+      description: Update task status (Technician only)
+      parameters:
+      - in: path
+        name: task_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - tasks
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/technician-dashboard/:
+    get:
+      operationId: technician_dashboard_retrieve
+      description: Get all upcoming and in-progress tasks for the technician
+      tags:
+      - technician-dashboard
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    Equipment:
+      type: object
+      description: Serializer for Equipment model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        serial_number:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+        description:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+      - serial_number
+      - updated_at
+    EquipmentList:
+      type: object
+      description: Serializer for listing equipment (simplified)
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        serial_number:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+      required:
+      - id
+      - name
+      - serial_number
+    EquipmentListRequest:
+      type: object
+      description: Serializer for listing equipment (simplified)
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        serial_number:
+          type: string
+          minLength: 1
+          maxLength: 100
+        is_active:
+          type: boolean
+      required:
+      - name
+      - serial_number
+    EquipmentRequest:
+      type: object
+      description: Serializer for Equipment model
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        serial_number:
+          type: string
+          minLength: 1
+          maxLength: 100
+        is_active:
+          type: boolean
+        description:
+          type: string
+          nullable: true
+      required:
+      - name
+      - serial_number
+    Job:
+      type: object
+      description: Serializer for Job model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        client_name:
+          type: string
+          maxLength: 200
+        created_by:
+          allOf:
+          - $ref: '#/components/schemas/UserList'
+          readOnly: true
+        assigned_to:
+          allOf:
+          - $ref: '#/components/schemas/UserList'
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/PriorityEnum'
+          minimum: 1
+          maximum: 4
+        scheduled_date:
+          type: string
+          format: date-time
+        overdue:
+          type: boolean
+        can_be_completed:
+          type: string
+          readOnly: true
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobTask'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - assigned_to
+      - can_be_completed
+      - client_name
+      - created_at
+      - created_by
+      - description
+      - id
+      - scheduled_date
+      - tasks
+      - title
+      - updated_at
+    JobCreate:
+      type: object
+      description: Serializer for creating Job (without read-only fields)
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        client_name:
+          type: string
+          maxLength: 200
+        assigned_to:
+          type: integer
+          nullable: true
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/PriorityEnum'
+          minimum: 1
+          maximum: 4
+        scheduled_date:
+          type: string
+          format: date-time
+      required:
+      - client_name
+      - description
+      - id
+      - scheduled_date
+      - title
+    JobCreateRequest:
+      type: object
+      description: Serializer for creating Job (without read-only fields)
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 1
+        client_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        assigned_to:
+          type: integer
+          nullable: true
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/PriorityEnum'
+          minimum: 1
+          maximum: 4
+        scheduled_date:
+          type: string
+          format: date-time
+      required:
+      - client_name
+      - description
+      - scheduled_date
+      - title
+    JobList:
+      type: object
+      description: Serializer for listing jobs (simplified)
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        client_name:
+          type: string
+          maxLength: 200
+        created_by:
+          allOf:
+          - $ref: '#/components/schemas/UserList'
+          readOnly: true
+        assigned_to:
+          allOf:
+          - $ref: '#/components/schemas/UserList'
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/PriorityEnum'
+          minimum: 1
+          maximum: 4
+        scheduled_date:
+          type: string
+          format: date-time
+        overdue:
+          type: boolean
+        task_count:
+          type: string
+          readOnly: true
+        completed_task_count:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - assigned_to
+      - client_name
+      - completed_task_count
+      - created_at
+      - created_by
+      - id
+      - scheduled_date
+      - task_count
+      - title
+    JobRequest:
+      type: object
+      description: Serializer for Job model
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 1
+        client_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/PriorityEnum'
+          minimum: 1
+          maximum: 4
+        scheduled_date:
+          type: string
+          format: date-time
+        overdue:
+          type: boolean
+      required:
+      - client_name
+      - description
+      - scheduled_date
+      - title
+    JobTask:
+      type: object
+      description: Serializer for JobTask model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        job:
+          type: integer
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        required_equipment:
+          type: array
+          items:
+            $ref: '#/components/schemas/EquipmentList'
+          readOnly: true
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          default: 0
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_overdue:
+          type: string
+          readOnly: true
+      required:
+      - created_at
+      - description
+      - id
+      - is_overdue
+      - job
+      - required_equipment
+      - title
+      - updated_at
+    JobTaskCreate:
+      type: object
+      description: Serializer for creating JobTask (without read-only fields)
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        job:
+          type: integer
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        required_equipment:
+          type: array
+          items:
+            type: integer
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          default: 0
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - description
+      - id
+      - job
+      - title
+    JobTaskCreateRequest:
+      type: object
+      description: Serializer for creating JobTask (without read-only fields)
+      properties:
+        job:
+          type: integer
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 1
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        required_equipment:
+          type: array
+          items:
+            type: integer
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          default: 0
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - description
+      - job
+      - title
+    JobTaskRequest:
+      type: object
+      description: Serializer for JobTask model
+      properties:
+        job:
+          type: integer
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 1
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          default: 0
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - description
+      - job
+      - title
+    PaginatedEquipmentListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/EquipmentList'
+    PaginatedJobListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobList'
+    PaginatedJobTaskList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobTask'
+    PaginatedUserListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserList'
+    PatchedEquipmentRequest:
+      type: object
+      description: Serializer for Equipment model
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        serial_number:
+          type: string
+          minLength: 1
+          maxLength: 100
+        is_active:
+          type: boolean
+        description:
+          type: string
+          nullable: true
+    PatchedJobRequest:
+      type: object
+      description: Serializer for Job model
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 1
+        client_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/PriorityEnum'
+          minimum: 1
+          maximum: 4
+        scheduled_date:
+          type: string
+          format: date-time
+        overdue:
+          type: boolean
+    PatchedJobTaskRequest:
+      type: object
+      description: Serializer for JobTask model
+      properties:
+        job:
+          type: integer
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          minLength: 1
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        order:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          default: 0
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+    PatchedUserRequest:
+      type: object
+      description: Serializer for User model
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        phone:
+          type: string
+          nullable: true
+          maxLength: 15
+        is_active:
+          type: boolean
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password_confirm:
+          type: string
+          writeOnly: true
+          minLength: 1
+    PriorityEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      type: integer
+      description: |-
+        * `1` - Low
+        * `2` - Medium
+        * `3` - High
+        * `4` - Critical
+    RoleEnum:
+      enum:
+      - admin
+      - technician
+      - sales_agent
+      type: string
+      description: |-
+        * `admin` - Admin
+        * `technician` - Technician
+        * `sales_agent` - Sales Agent
+    StatusEnum:
+      enum:
+      - pending
+      - in_progress
+      - completed
+      - cancelled
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `in_progress` - In Progress
+        * `completed` - Completed
+        * `cancelled` - Cancelled
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+      required:
+      - access
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - refresh
+    TypeEnum:
+      enum:
+      - tool
+      - machine
+      - vehicle
+      - other
+      type: string
+      description: |-
+        * `tool` - Tool
+        * `machine` - Machine
+        * `vehicle` - Vehicle
+        * `other` - Other
+    User:
+      type: object
+      description: Serializer for User model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        phone:
+          type: string
+          nullable: true
+          maxLength: 15
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - updated_at
+      - username
+    UserList:
+      type: object
+      description: Serializer for listing users (without sensitive data)
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        is_active:
+          type: boolean
+      required:
+      - id
+      - username
+    UserListRequest:
+      type: object
+      description: Serializer for listing users (without sensitive data)
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        is_active:
+          type: boolean
+      required:
+      - username
+    UserRequest:
+      type: object
+      description: Serializer for User model
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        phone:
+          type: string
+          nullable: true
+          maxLength: 15
+        is_active:
+          type: boolean
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password_confirm:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - username
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+- name: Authentication
+  description: User authentication endpoints
+- name: Users
+  description: User management endpoints
+- name: Jobs
+  description: Job management endpoints
+- name: Tasks
+  description: Task management endpoints
+- name: Equipment
+  description: Equipment management endpoints
+- name: Dashboard
+  description: Dashboard and analytics endpoints
