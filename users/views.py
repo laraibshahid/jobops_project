@@ -1,9 +1,10 @@
 from rest_framework import status, generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
+from drf_spectacular.utils import extend_schema, OpenApiResponse
 from .models import User
 from .serializers import (
     UserSerializer, UserListSerializer, LoginSerializer, ChangePasswordSerializer
@@ -44,7 +45,15 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 
+@extend_schema(
+    request=LoginSerializer,
+    responses={
+        200: UserListSerializer,
+        400: OpenApiResponse(description="Invalid credentials")
+    }
+)
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def login_view(request):
     """
     User login endpoint
@@ -63,6 +72,13 @@ def login_view(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(
+    request=ChangePasswordSerializer,
+    responses={
+        200: OpenApiResponse(description="Password changed successfully"),
+        400: OpenApiResponse(description="Invalid data")
+    }
+)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def change_password_view(request):
@@ -79,6 +95,9 @@ def change_password_view(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(
+    responses={200: UserListSerializer}
+)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def user_info_view(request):

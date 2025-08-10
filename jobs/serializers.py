@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field
 from .models import Job, JobTask
 from users.serializers import UserListSerializer
 from equipment.serializers import EquipmentListSerializer
@@ -86,10 +87,12 @@ class JobListSerializer(serializers.ModelSerializer):
             'completed_task_count', 'created_at'
         ]
     
-    def get_task_count(self, obj):
+    @extend_schema_field(int)
+    def get_task_count(self, obj) -> int:
         return obj.tasks.count()
     
-    def get_completed_task_count(self, obj):
+    @extend_schema_field(int)
+    def get_completed_task_count(self, obj) -> int:
         return obj.tasks.filter(status='completed').count()
 
 
@@ -100,16 +103,24 @@ class TechnicianDashboardSerializer(serializers.ModelSerializer):
     job_title = serializers.CharField(source='job.title', read_only=True)
     job_client = serializers.CharField(source='job.client_name', read_only=True)
     required_equipment = EquipmentListSerializer(many=True, read_only=True)
-    is_overdue = serializers.ReadOnlyField()
+    is_overdue = serializers.SerializerMethodField()
     
     class Meta:
         model = JobTask
         fields = [
             'id', 'job', 'job_title', 'job_client', 'title', 'description',
-            'status', 'required_equipment', 'order', 'is_overdue', 'scheduled_date'
+            'status', 'required_equipment', 'order', 'is_overdue'
         ]
+    
+    @extend_schema_field(bool)
+    def get_is_overdue(self, obj) -> bool:
+        return obj.is_overdue
     
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['scheduled_date'] = instance.job.scheduled_date
+        # Convert datetime to ISO format string to avoid JSON serialization issues
+        if instance.job.scheduled_date:
+            data['scheduled_date'] = instance.job.scheduled_date.isoformat()
+        else:
+            data['scheduled_date'] = None
         return data 

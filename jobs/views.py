@@ -6,6 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
 from django.db.models import Q, Avg, Count
 from datetime import datetime, timedelta
+from drf_spectacular.utils import extend_schema, OpenApiResponse
 from .models import Job, JobTask
 from .serializers import (
     JobSerializer, JobCreateSerializer, JobListSerializer,
@@ -73,6 +74,9 @@ class JobTaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAdminOrSalesAgent | IsAssignedTechnician]
 
 
+@extend_schema(
+    responses={200: OpenApiResponse(description="Technician dashboard data")}
+)
 @api_view(['GET'])
 @permission_classes([IsTechnicianUser])
 def technician_dashboard_view(request):
@@ -93,11 +97,13 @@ def technician_dashboard_view(request):
     
     for task in tasks:
         job_date = task.job.scheduled_date.date()
-        if job_date not in dashboard_data:
-            dashboard_data[job_date] = []
+        # Convert date to ISO format string for JSON serialization
+        date_key = job_date.isoformat()
+        if date_key not in dashboard_data:
+            dashboard_data[date_key] = []
         
         serializer = TechnicianDashboardSerializer(task)
-        dashboard_data[job_date].append(serializer.data)
+        dashboard_data[date_key].append(serializer.data)
     
     # Sort by date
     sorted_data = dict(sorted(dashboard_data.items()))
@@ -108,6 +114,12 @@ def technician_dashboard_view(request):
     })
 
 
+@extend_schema(
+    responses={
+        200: OpenApiResponse(description="Admin analytics data"),
+        403: OpenApiResponse(description="Admin access required")
+    }
+)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def admin_analytics_view(request):
@@ -133,8 +145,13 @@ def admin_analytics_view(request):
     )
     
     if completed_tasks.exists():
+        # Use ExpressionWrapper for proper datetime arithmetic
+        from django.db.models import ExpressionWrapper, F, DurationField
         avg_completion_time = completed_tasks.aggregate(
-            avg_time=Avg('completed_at' - 'created_at')
+            avg_time=Avg(ExpressionWrapper(
+                F('completed_at') - F('created_at'),
+                output_field=DurationField()
+            ))
         )['avg_time']
     else:
         avg_completion_time = None
@@ -168,6 +185,14 @@ def admin_analytics_view(request):
     })
 
 
+@extend_schema(
+    request=OpenApiResponse(description="Task status update data"),
+    responses={
+        200: JobTaskSerializer,
+        400: OpenApiResponse(description="Invalid status"),
+        404: OpenApiResponse(description="Task not found")
+    }
+)
 @api_view(['POST'])
 @permission_classes([IsAssignedTechnician])
 def update_task_status_view(request, task_id):
