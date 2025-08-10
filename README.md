@@ -278,6 +278,7 @@ CELERY_RESULT_BACKEND=redis://localhost:6379/0
 - Configure CORS properly
 - Use environment variables for secrets
 
+
 ## Contributing
 
 1. Fork the repository
@@ -289,8 +290,27 @@ CELERY_RESULT_BACKEND=redis://localhost:6379/0
 ## License
 
 This project is licensed under the MIT License.
-
 ## Support
 
 For support and questions, please contact the development team or create an issue in the repository. 
 # jobops_project
+
+
+
+## Django App — DevOps & Deployment
+
+### Overview
+This repository contains:
+- Dockerfile — (non-root)
+- .github/workflows/ci.yml — CI: tests + build + push to GHCR
+- docker-compose.yml — run jobops + Postgres on EC2
+
+### How to deploy (manual)
+1. Provision EC2 with IAM role that has AmazonSSMManagedInstanceCore.
+2. SSH/SSM into EC2:
+   ```bash
+   cd /home/ubuntu/jobops
+   # create .env securely
+   docker-compose pull
+   docker-compose up -d
+   ```
