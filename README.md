@@ -2,6 +2,8 @@
 
 A comprehensive Django-based system for managing job flows, multi-step tasks, and equipment tracking for internal teams (Sales, Technicians, Admins).
 
+**Repository**: [https://github.com/laraibshahid/jobops_project.git](https://github.com/laraibshahid/jobops_project.git)
+
 ## Features
 
 ### Core Functionality
@@ -50,8 +52,8 @@ jobops/
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd JobOps
+   git clone https://github.com/laraibshahid/jobops_project.git
+   cd jobops_project
    ```
 
 2. **Create virtual environment**
@@ -67,8 +69,8 @@ jobops/
 
 4. **Set up environment variables**
    ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
+   # Create .env file with your configuration
+   # See Environment Variables section below
    ```
 
 ### Environment Variables
@@ -100,26 +102,73 @@ CELERY_RESULT_BACKEND=redis://localhost:6379/0
 - Set `DEBUG=False` in production
 - Update `DJANGO_ALLOWED_HOSTS` with your domain in production
 - Ensure PostgreSQL is running and accessible with the configured credentials
+- **For development without PostgreSQL**: The project includes SQLite fallback in `db.sqlite3`
+
+**⚠️ Current Issue**: The project is currently configured to use PostgreSQL but the database credentials in settings.py are not properly configured. For immediate development, the SQLite database (`db.sqlite3`) should work without additional configuration.
 
 5. **Run migrations**
    ```bash
-   python manage.py migrate
+   python3 manage.py migrate
    ```
 
 6. **Create superuser**
    ```bash
-   python manage.py createsuperuser
+   python3 manage.py createsuperuser
    ```
 
 7. **Load sample data (optional)**
    ```bash
-   python manage.py loaddata fixtures/sample_data.json
+   python3 manage.py loaddata fixtures/sample_data.json
    ```
 
 8. **Start the development server**
+   
+   **Option 1: Using manage.sh (Recommended)**
    ```bash
-   python manage.py runserver
+   ./manage.sh runserver
    ```
+   
+   **Option 2: Direct Django command**
+   ```bash
+   python3 manage.py runserver
+   ```
+
+### Troubleshooting Common Issues
+
+#### Database Connection Issues
+If you encounter "ImproperlyConfigured: settings.DATABASES is improperly configured" error:
+
+1. **For Development (SQLite)**: The project includes a pre-configured SQLite database (`db.sqlite3`) that should work out of the box.
+
+2. **For PostgreSQL**: Ensure your `.env` file contains valid database credentials:
+   ```bash
+   DATABASE_NAME=your_db_name
+   DATABASE_USERNAME=your_db_user
+   DATABASE_PASSWORD=your_db_password
+   DATABASE_HOST=localhost
+   DATABASE_PORT=5432
+   ```
+
+3. **Check Database Status**:
+   ```bash
+   python3 manage.py check --database default
+   ```
+
+#### Sample Data Loading Issues
+If fixture loading fails:
+1. Ensure the database is properly configured
+2. Check that migrations have been applied
+3. Verify the fixture file exists: `fixtures/sample_data.json`
+
+#### Port Already in Use
+If port 8000 is already in use:
+```bash
+# Find processes using port 8000
+lsof -ti:8000
+
+# Kill processes on port 8000
+kill -9 $(lsof -ti:8000)
+```
 
 ### Running Background Tasks
 
@@ -146,17 +195,17 @@ CELERY_RESULT_BACKEND=redis://localhost:6379/0
 - `GET /api/redoc/` - ReDoc documentation
 
 ### Authentication
-- `POST /api/auth/login/` - User login
-- `POST /api/auth/token/refresh/` - Refresh JWT token
-- `GET /api/auth/profile/` - Get current user info
-- `POST /api/auth/change-password/` - Change password
+- `POST /api/login/` - User login (Note: NOT `/api/auth/login/`)
+- `POST /api/token/refresh/` - Refresh JWT token
+- `GET /api/profile/` - Get current user info
+- `POST /api/change-password/` - Change password
 
 ### User Management (Admin only)
-- `GET /api/auth/users/` - List all users
-- `POST /api/auth/users/` - Create new user
-- `GET /api/auth/users/{id}/` - Get user details
-- `PUT /api/auth/users/{id}/` - Update user
-- `DELETE /api/auth/users/{id}/` - Delete user
+- `GET /api/users/` - List all users
+- `POST /api/users/` - Create new user
+- `GET /api/users/{id}/` - Get user details
+- `PUT /api/users/{id}/` - Update user
+- `DELETE /api/users/{id}/` - Delete user
 
 ### Jobs
 - `GET /api/jobs/` - List all jobs
@@ -232,14 +281,14 @@ The system includes sample data with:
 
 ### Running Tests
 ```bash
-python manage.py test
+python3 manage.py test
 ```
 
 ### Code Style
 The project follows PEP 8 standards. Use a linter like `flake8` for code quality.
 
 ### Adding New Features
-1. Create new app if needed: `python manage.py startapp app_name`
+1. Create new app if needed: `python3 manage.py startapp app_name`
 2. Add models, serializers, views, and URLs
 3. Update permissions if needed
 4. Add tests
@@ -278,6 +327,29 @@ CELERY_RESULT_BACKEND=redis://localhost:6379/0
 - Configure CORS properly
 - Use environment variables for secrets
 
+## Docker Deployment
+
+### Using Docker Compose
+```bash
+# Start the services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+### Manual Docker Deployment
+1. Provision EC2 with IAM role that has AmazonSSMManagedInstanceCore
+2. SSH/SSM into EC2:
+   ```bash
+   cd /home/ubuntu/jobops
+   # create .env securely
+   docker-compose pull
+   docker-compose up -d
+   ```
 
 ## Contributing
 
@@ -290,27 +362,15 @@ CELERY_RESULT_BACKEND=redis://localhost:6379/0
 ## License
 
 This project is licensed under the MIT License.
+
 ## Support
 
-For support and questions, please contact the development team or create an issue in the repository. 
-# jobops_project
+For support and questions, please contact the development team or create an issue in the repository.
 
+## Repository Information
 
-
-## Django App — DevOps & Deployment
-
-### Overview
-This repository contains:
-- Dockerfile — (non-root)
-- .github/workflows/ci.yml — CI: tests + build + push to GHCR
-- docker-compose.yml — run jobops + Postgres on EC2
-
-### How to deploy (manual)
-1. Provision EC2 with IAM role that has AmazonSSMManagedInstanceCore.
-2. SSH/SSM into EC2:
-   ```bash
-   cd /home/ubuntu/jobops
-   # create .env securely
-   docker-compose pull
-   docker-compose up -d
-   ```
+- **GitHub**: [https://github.com/laraibshahid/jobops_project.git](https://github.com/laraibshahid/jobops_project.git)
+- **Main Branch**: `main`
+- **Language**: Python (97.5%), Dockerfile (1.8%), Shell (0.7%)
+- **CI/CD**: GitHub Actions with automated testing and Docker image building
+- **Container Registry**: GitHub Container Registry (GHCR)
